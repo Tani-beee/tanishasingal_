@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Grand Cricket Showdown - Interactive</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- START OF EMBEDDED CSS --- */
+        :root {
+            --main-green: #4CAF50; /* Cricket pitch green */
+            --dark-green: #388E3C;
+            --off-white: #F9F9F9;
+            --dark-grey: #333;
+            --light-grey: #EEE;
+            --blue: #2196F3; /* Highlight for live/upcoming */
+            --red: #F44336; /* Highlight for completed */
+            --yellow-accent: #FFEB3B; /* New accent for highlights */
+            --border-radius: 10px;
+            --box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--off-white);
+            color: var(--dark-grey);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(to right, var(--main-green), var(--dark-green));
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://source.unsplash.com/1200x300/?cricket-stadium,crowd,lights') no-repeat center center/cover;
+            opacity: 0.2;
+            z-index: 0;
+        }
+
+        header .content {
+            position: relative;
+            z-index: 1;
+        }
+
+        header h1 {
+            margin-bottom: 10px;
+            font-size: 4.5em;
+            letter-spacing: 2px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+        }
+
+        header p {
+            font-size: 1.6em;
+            opacity: 0.9;
+        }
+
+        section {
+            padding: 60px 20px;
+            margin-bottom: 30px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        h2 {
+            color: var(--main-green);
+            font-size: 3.2em;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            width: 80px;
+            height: 4px;
+            background-color: var(--yellow-accent); /* Changed accent color */
+            border-radius: 2px;
+        }
+
+        /* Live Score Section */
+        .live-score-card {
+            background-color: var(--dark-grey);
+            color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            margin-top: 30px;
+            font-size: 1.8em;
+        }
+
+        .live-score-card .score-display {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .live-score-card .match-info {
+            font-size: 0.8em;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .live-score-card .refresh-btn {
+            background-color: var(--main-green);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.7em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .live-score-card .refresh-btn:hover {
+            background-color: var(--dark-green);
+            transform: translateY(-2px);
+        }
+
+
+        /* Match Schedule styles (unchanged mostly) */
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .match-card {
+            background-color: var(--light-grey);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .match-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .match-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.05;
+            background-position: center;
+            background-size: cover;
+            z-index: 0;
+        }
+
+        .match-card.upcoming::before { background-image: url('https://source.unsplash.com/300x200/?cricket-ball'); }
+        .match-card.live::before { background-image: url('https://source.unsplash.com/300x200/?cricket-stumps'); }
+        .match-card.completed::before { background-image: url('https://source.unsplash.com/300x200/?cricket-trophy'); }
+
+
+        .match-card .status {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 1;
+        }
+
+        .match-card.upcoming .status { background-color: var(--blue); color: white; }
+        .match-card.live .status { background-color: var(--red); color: white; animation: pulse-live 1.5s infinite; }
+        .match-card.completed .status { background-color: var(--main-green); color: white; }
+
+        @keyframes pulse-live {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .match-card h3 {
+            font-size: 1.8em;
+            color: var(--dark-green);
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .match-card p {
+            margin: 8px 0;
+            font-size: 1.1em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .match-card .date-time i, .match-card .venue i {
+            margin-right: 8px;
+            color: var(--main-green);
+        }
+
+        .match-card .result {
+            font-weight: bold;
+            margin-top: 15px;
+            color: var(--dark-green);
+            font-size: 1.2em;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Teams Section */
+        .teams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .team-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .team-card img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid var(--main-green);
+            margin-bottom: 15px;
+        }
+
+        .team-card h3 {
+            color: var(--dark-grey);
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .team-card .roster-toggle-btn {
+            background-color: var(--blue);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+        .team-card .roster-toggle-btn:hover {
+            background-color: #1976D2;
+        }
+
+        .team-card .player-list {
+            margin-top: 15px;
+            text-align: left;
+            font-size: 0.9em;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .team-card .player-list.expanded {
+            max-height: 500px; /* Adjust based on expected list length */
+        }
+        .team-card .player-list ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .team-card .player-list li {
+            padding: 5px 0;
+            border-bottom: 1px dotted var(--light-grey);
+        }
+        .team-card .player-list li:last-child {
+            border-bottom: none;
+        }
+
+
+        /* Highlights Section (Carousel) */
+        .highlights-carousel {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-top: 30px;
+            height: 400px; /* Fixed height for carousel */
+        }
+
+        .carousel-inner {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 100%;
+        }
+
+        .carousel-item {
+            min-width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            font-size: 1.8em;
+            padding-bottom: 20px;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            padding: 15px 10px;
+            cursor: pointer;
+            font-size: 1.5em;
+            z-index: 10;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .carousel-btn:hover {
+            background-color: rgba(0,0,0,0.7);
+        }
+
+        .carousel-btn.prev {
+            left: 10px;
+        }
+
+        .carousel-btn.next {
+            right: 10px;
+        }
+
+        /* News Section (unchanged) */
+        .news-item {
+            background-color: var(--light-grey);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            text-align: left;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+        }
+
+        .news-item h3 {
+            color: var(--dark-green);
+            font-size: 1.6em;
+            margin-bottom: 10px;
+        }
+
+        .news-item p {
+            font-size: 1.0em;
+            margin-bottom: 10px;
+        }
+
+        .news-item .read-more {
+            color: var(--blue);
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        .news-item .read-more:hover {
+            text-decoration: underline;
+        }
+
+        /* General button style */
+        .btn {
+            display: inline-block;
+            background-color: var(--main-green);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px; /* Pill shape */
+            text-decoration: none;
+            font-size: 1.2em;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            margin-top: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: var(--dark-green);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--dark-grey);
+            font-size: 0.9em;
+            background-color: white;
+            margin-top: 20px;
+            border-top: 1px solid var(--light-grey);
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 992px) {
+            header h1 {
+                font-size: 3.5em;
+            }
+            header p {
+                font-size: 1.3em;
+            }
+            h2 {
+                font-size: 2.8em;
+            }
+            .live-score-card {
+                font-size: 1.5em;
+            }
+            .live-score-card .score-display {
+                font-size: 2em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.8em;
+            }
+            header p {
+                font-size: 1.1em;
+            }
+            h2 {
+                font-size: 2.2em;
+                margin-bottom: 30px;
+            }
+            .match-card, .team-card {
+                padding: 20px;
+            }
+            .live-score-card {
+                font-size: 1.2em;
+                padding: 20px;
+            }
+            .live-score-card .score-display {
+                font-size: 1.8em;
+            }
+            .highlights-carousel {
+                height: 300px; /* Adjust height for smaller screens */
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 2em;
+            }
+            header p {
+                font-size: 1em;
+            }
+            h2 {
+                font-size: 1.8em;
+            }
+            .btn {
+                font-size: 1em;
+                padding: 10px 20px;
+            }
+            .container {
+                padding: 10px;
+            }
+            .highlights-carousel {
+                height: 250px;
+            }
+            .carousel-item {
+                font-size: 1.2em;
+            }
+        }
+        /* --- END OF EMBEDDED CSS --- */
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="content">
+            <h1>The Grand Cricket Showdown 2025</h1>
+            <p>India vs Australia Test Series</p>
+            <p>A Battle of Giants!</p>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <section id="live-score">
+            <h2>Live Score Update</h2>
+            <div class="live-score-card">
+                <div class="score-display" id="currentScore">
+                    Fetching latest score...
+                </div>
+                <div class="match-info" id="matchStatus">
+                    Check back closer to match time.
+                </div>
+                <button class="refresh-btn" id="refreshScoreBtn"><i class="fas fa-sync-alt"></i> Refresh Score</button>
+            </div>
+        </section>
+
+        <section id="schedule">
+            <h2>Match Schedule</h2>
+            <div class="schedule-grid" id="matchScheduleGrid">
+                </div>
+            <a href="#" class="btn">Get Tickets!</a>
+        </section>
+
+        <section id="teams">
+            <h2>Participating Teams</h2>
+            <div class="teams-grid">
+                <div class="team-card">
+                    <img src="https://res.cloudinary.com/dnlhvdxem/image/upload/v1748026457/640px-Flag_of_India.svg_osb2cb.png" alt="India Cricket Team">
+                    <h3>India</h3>
+                    <p>The Men in Blue</p>
+                    <button class="roster-toggle-btn" data-team="india">Show Roster</button>
+                    <div class="player-list" id="indiaRoster">
+                        <ul>
+                            <li>Rohit Sharma (C)</li>
+                            <li>Virat Kohli</li>
+                            <li>Jasprit Bumrah</li>
+                            <li>Ravindra Jadeja</li>
+                            <li>Rishabh Pant (WK)</li>
+                            <li>KL Rahul</li>
+                            <li>Mohammed Shami</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <img src="https://res.cloudinary.com/dnlhvdxem/image/upload/v1748026484/960px-Flag_of_Australia__28converted_29.svg_lyyop3.png" alt="Australia Cricket Team">
+                    <h3>Australia</h3>
+                    <p>The Baggy Greens</p>
+                    <button class="roster-toggle-btn" data-team="australia">Show Roster</button>
+                    <div class="player-list" id="australiaRoster">
+                        <ul>
+                            <li>Pat Cummins (C)</li>
+                            <li>Steve Smith</li>
+                            <li>David Warner</li>
+                            <li>Mitchell Starc</li>
+                            <li>Josh Hazlewood</li>
+                            <li>Marnus Labuschagne</li>
+                            <li>Travis Head</li>
+                        </ul>
+                    </div>
+                </div>
+                </div>
+        </section>
+
+        <section id="highlights">
+            <h2>Match Highlights</h2>
+            <div class="highlights-carousel">
+                <div class="carousel-inner" id="carouselInner">
+                    <div class="carousel-item" style="background-image: url('https://res.cloudinary.com/dnlhvdxem/image/upload/v1748026778/o232gf9_rohit-sharma-bcci_625x300_01_October_24_v4f7gl.jpg')">
+                        "Unbelievable Sixer!"
+                    </div>
+                    <div class="carousel-item" style="background-image: url('https://res.cloudinary.com/dnlhvdxem/image/upload/v1748026625/esR4GMIw_ssftid.jpg')">
+                        "Hat-trick Hero!"
+                    </div>
+                    <div class="carousel-item" style="background-image: url('https://res.cloudinary.com/dnlhvdxem/image/upload/v1748026680/98006089_gnzktw.jpg')">
+                        "Stunning Catch at the Boundary!"
+                    </div>
+                     <div class="carousel-item" style="background-image: url('https://res.cloudinary.com/dnlhvdxem/image/upload/v1748026713/102026139_qt5vmz.jpg')">
+                        "Century for Kohli!"
+                    </div>
+                </div>
+                <button class="carousel-btn prev" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+                <button class="carousel-btn next" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <section id="news">
+            <h2>Latest News & Updates</h2>
+            <div class="news-item">
+                <h3>Captain's Press Conference Highlights</h3>
+                <p>Both captains expressed confidence ahead of the series opener, emphasizing competitive cricket and sportsmanship. Expect fireworks on the field!</p>
+                <a href="#" class="read-more">Read More</a>
+            </div>
+            <div class="news-item">
+                <h3>Pitch Report: Green Top Expected for First Test</h3>
+                <p>Early reports from the grounds suggest a lively pitch for the first Test in Bengaluru, promising an exciting contest between bat and ball.</p>
+                <a href="#" class="read-more">Read More</a>
+            </div>
+            <div class="news-item">
+                <h3>Squad Announcements & Player Fitness</h3>
+                <p>Team India announces final squad with a few surprising inclusions, while Australia reports all players fit and ready for action.</p>
+                <a href="#" class="read-more">Read More</a>
+            </div>
+            <a href="#" class="btn">All News & Articles</a>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2025 The Grand Cricket Showdown. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        /* --- START OF EMBEDDED JAVASCRIPT --- */
+
+        // 1. Live Score Simulation
+        const currentScoreElement = document.getElementById('currentScore');
+        const matchStatusElement = document.getElementById('matchStatus');
+        const refreshScoreBtn = document.getElementById('refreshScoreBtn');
+
+        let currentMatchState = {
+            team1: "India",
+            team2: "Australia",
+            score1: 0,
+            wickets1: 0,
+            overs1: 0.0,
+            score2: 0,
+            wickets2: 0,
+            overs2: 0.0,
+            currentInnings: 1,
+            target: "N/A",
+            status: "Match not started yet.",
+            lastUpdated: new Date()
+        };
+
+        function simulateLiveScore() {
+            // This is a simple simulation. In a real app, you'd fetch from an API.
+            const now = new Date();
+            const firstMatchDateTime = new Date("May 24, 2025 09:30:00"); // Example: First match started today at 9:30 AM
+            const matchDurationHours = 8; // Simulate daily play duration for a Test match day
+
+            if (now < firstMatchDateTime) {
+                currentMatchState.status = "Match not started yet.";
+                currentScoreElement.textContent = "Match not started yet.";
+            } else if (now >= firstMatchDateTime && now < new Date(firstMatchDateTime.getTime() + matchDurationHours * 3600 * 1000)) {
+                // Simulate 1st Innings
+                if (currentMatchState.currentInnings === 1) {
+                    currentMatchState.score1 = Math.floor(Math.random() * 300) + 50; // Random score
+                    currentMatchState.wickets1 = Math.floor(Math.random() * 9) + 1;
+                    currentMatchState.overs1 = (Math.random() * 90).toFixed(1);
+                    currentMatchState.status = `${currentMatchState.team1} Batting`;
+                    currentScoreElement.textContent = `${currentMatchState.team1}: ${currentMatchState.score1}/${currentMatchState.wickets1} (${currentMatchState.overs1} Overs)`;
+                } else if (currentMatchState.currentInnings === 2) {
+                    // Simulate 2nd Innings (if 1st innings finished quickly or resumed)
+                    currentMatchState.score2 = Math.floor(Math.random() * 150) + 10;
+                    currentMatchState.wickets2 = Math.floor(Math.random() * 6) + 1;
+                    currentMatchState.overs2 = (Math.random() * 40).toFixed(1);
+                    currentMatchState.status = `${currentMatchState.team2} Batting`;
+                    currentScoreElement.textContent = `${currentMatchState.team2}: ${currentMatchState.score2}/${currentMatchState.wickets2} (${currentMatchState.overs2} Overs)`;
+                }
+
+                // Decide to switch innings (very basic logic)
+                if (currentMatchState.score1 > 200 && currentMatchState.wickets1 >= 9 && currentMatchState.currentInnings === 1) {
+                    currentMatchState.currentInnings = 2;
+                    currentMatchState.target = currentMatchState.score1 + 1; // Example target
+                    currentMatchState.status = `${currentMatchState.team2} needs ${currentMatchState.target} to win`;
+                }
+
+            } else {
+                currentMatchState.status = "Match concluded or in break.";
+                currentScoreElement.textContent = `Match Ended: ${currentMatchState.team1} won by X runs / ${currentMatchState.team2} won by Y wickets`; // Placeholder result
+            }
+
+            matchStatusElement.textContent = `Status: ${currentMatchState.status} | Last updated: ${currentMatchState.lastUpdated.toLocaleTimeString()}`;
+            currentMatchState.lastUpdated = now; // Update timestamp
+        }
+
+        refreshScoreBtn.addEventListener('click', simulateLiveScore);
+        simulateLiveScore(); // Initial load of score
+
+
+        // 2. Dynamic Match Schedule Generation & Status Update (from previous version, slightly adapted)
+        const matches = [
+            {
+                id: 1,
+                team1: "India",
+                team2: "Australia",
+                format: "1st Test",
+                venue: "M. Chinnaswamy Stadium, Bengaluru",
+                dateTime: "May 24, 2025 09:30:00", // Current date for demo purposes
+                result: "Match Scheduled",
+            },
+            {
+                id: 2,
+                team1: "Australia",
+                team2: "India",
+                format: "2nd Test",
+                venue: "MCG, Melbourne",
+                dateTime: "November 28, 2025 05:00:00",
+                result: "Match Scheduled",
+            },
+            {
+                id: 3,
+                team1: "India",
+                team2: "Australia",
+                format: "3rd Test",
+                venue: "SCG, Sydney",
+                dateTime: "December 08, 2025 05:00:00",
+                result: "Match Scheduled",
+            },
+            {
+                id: 4,
+                team1: "Australia",
+                team2: "India",
+                format: "4th Test",
+                venue: "WACA, Perth",
+                dateTime: "December 18, 2025 07:30:00",
+                result: "Match Scheduled",
+            }
+        ];
+
+        const matchScheduleGrid = document.getElementById('matchScheduleGrid');
+
+        function updateMatchSchedule() {
+            matchScheduleGrid.innerHTML = '';
+
+            const now = new Date().getTime();
+
+            matches.forEach(match => {
+                const matchTime = new Date(match.dateTime).getTime();
+                const testMatchDuration = 5 * 24 * 60 * 60 * 1000; // 5 days for Test match
+                const oneDayInMs = 24 * 60 * 60 * 1000; // 1 day in milliseconds
+
+                let statusClass = "upcoming";
+                let statusText = "Upcoming";
+                let displayResult = match.result;
+
+                // Simple logic for match status
+                if (now >= matchTime && now <= (matchTime + testMatchDuration)) {
+                    statusClass = "live";
+                    statusText = "LIVE";
+                    displayResult = "LIVE - Follow the Action!";
+                } else if (now > (matchTime + testMatchDuration)) {
+                    statusClass = "completed";
+                    statusText = "Completed";
+                    // Dynamic placeholder for completed matches. In real-world, fetch real results.
+                    displayResult = "Result: " + (match.id % 2 === 0 ? `${match.team1} won by an innings!` : `${match.team2} won by 5 wickets.`);
+                }
+
+                const matchDate = new Date(match.dateTime).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+                const matchTimeStr = new Date(match.dateTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+                const matchCard = document.createElement('div');
+                matchCard.className = `match-card ${statusClass}`;
+                matchCard.innerHTML = `
+                    <span class="status">${statusText}</span>
+                    <h3>${match.team1} vs ${match.team2}</h3>
+                    <p>${match.format}</p>
+                    <p class="date-time"><i class="far fa-calendar-alt"></i> ${matchDate} <i class="far fa-clock"></i> ${matchTimeStr}</p>
+                    <p class="venue"><i class="fas fa-map-marker-alt"></i> ${match.venue}</p>
+                    <p class="result">${displayResult}</p>
+                `;
+                matchScheduleGrid.appendChild(matchCard);
+            });
+        }
+
+        updateMatchSchedule(); // Initial load
+        // Optional: set an interval to update schedule (e.g., every minute) if status changes often
+        // setInterval(updateMatchSchedule, 60 * 1000);
+
+
+        // 3. Team Roster Toggle
+        document.querySelectorAll('.roster-toggle-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const teamId = this.dataset.team; // Get the team name from data-team attribute
+                const playerList = document.getElementById(`${teamId}Roster`);
+                if (playerList) {
+                    playerList.classList.toggle('expanded');
+                    if (playerList.classList.contains('expanded')) {
+                        this.textContent = 'Hide Roster';
+                    } else {
+                        this.textContent = 'Show Roster';
+                    }
+                }
+            });
+        });
+
+        // 4. Match Highlights Carousel
+        const carouselInner = document.getElementById('carouselInner');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const carouselItems = document.querySelectorAll('.carousel-item');
+
+        let currentIndex = 0;
+        const totalItems = carouselItems.length;
+
+        function updateCarousel() {
+            const offset = -currentIndex * 100;
+            carouselInner.style.transform = `translateX(${offset}%)`;
+        }
+
+        prevBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex > 0) ? currentIndex - 1 : totalItems - 1;
+            updateCarousel();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex < totalItems - 1) ? currentIndex + 1 : 0;
+            updateCarousel();
+        });
+
+        /* --- END OF EMBEDDED JAVASCRIPT --- */
+    </script>
+
+</body>
+</html>

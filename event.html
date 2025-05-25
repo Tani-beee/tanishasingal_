@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Event Extravaganza</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- START OF EMBEDDED CSS --- */
+        :root {
+            --primary-color: #673AB7; /* Deep Purple */
+            --secondary-color: #EDE7F6; /* Light Purple for background */
+            --accent-color: #FFC107; /* Amber for highlights */
+            --text-color: #333;
+            --light-text-color: #f4f4f4;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: var(--light-text-color);
+            padding: 60px 20px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            position: relative; /* Needed for any absolute positioning inside */
+            overflow: hidden; /* To contain background patterns if added */
+        }
+
+        header h1 {
+            margin-bottom: 10px;
+            font-size: 3.8em;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.4em;
+            opacity: 0.9;
+        }
+
+        section {
+            padding: 60px 20px;
+            margin-bottom: 30px;
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            text-align: left; /* Default text alignment for sections */
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-size: 3em;
+            text-align: center;
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 10px;
+            display: inline-block; /* To make border-bottom only under text */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .about-content {
+            max-height: 180px; /* Initial height for about section */
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+            margin-bottom: 20px;
+        }
+
+        .about-content.expanded {
+            max-height: 1000px; /* Enough to show all content */
+        }
+
+        .read-more-btn {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: underline;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
+        }
+
+        .read-more-btn:hover {
+            color: #4527A0; /* Darker purple */
+        }
+
+
+        .event-details div {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            text-align: center; /* Center details */
+        }
+
+        .event-details i {
+            margin-right: 12px;
+            color: var(--primary-color);
+            font-size: 1.3em;
+        }
+
+        .countdown-timer {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .countdown-item {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            padding: 20px 25px;
+            border-radius: var(--border-radius);
+            font-size: 1.8em;
+            font-weight: bold;
+            box-shadow: var(--box-shadow);
+            min-width: 120px; /* Ensure consistent width */
+            text-align: center;
+            animation: pulse 1.5s infinite alternate; /* Simple animation */
+        }
+
+        .countdown-item span {
+            display: block;
+            font-size: 0.6em;
+            font-weight: normal;
+            margin-top: 5px;
+            color: rgba(0,0,0,0.6);
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.03); }
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: var(--light-text-color);
+            padding: 15px 35px;
+            border-radius: 30px; /* Pill shape */
+            text-decoration: none;
+            font-size: 1.3em;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            background-color: #512DA8; /* Darker primary */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .contact-info p {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .contact-info a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-color);
+            font-size: 0.9em;
+            background-color: #fff;
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.8em;
+            }
+
+            header p {
+                font-size: 1.1em;
+            }
+
+            h2 {
+                font-size: 2.2em;
+            }
+
+            .countdown-item {
+                font-size: 1.5em;
+                padding: 15px 20px;
+                min-width: 100px;
+            }
+
+            .btn {
+                padding: 12px 25px;
+                font-size: 1.1em;
+            }
+
+            section {
+                padding: 40px 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            header p {
+                font-size: 1em;
+            }
+
+            h2 {
+                font-size: 1.8em;
+            }
+
+            .countdown-item {
+                font-size: 1.2em;
+                padding: 10px 15px;
+                min-width: 80px;
+            }
+
+            .btn {
+                font-size: 1em;
+                padding: 10px 20px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+        }
+        /* --- END OF EMBEDDED CSS --- */
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1>The Innovators' Convergence 2025</h1>
+            <p>Shaping Tomorrow, Today.</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <section id="countdown">
+            <h2>Event Starts In:</h2>
+            <div class="countdown-timer">
+                <div class="countdown-item" id="days">00 <span>Days</span></div>
+                <div class="countdown-item" id="hours">00 <span>Hours</span></div>
+                <div class="countdown-item" id="minutes">00 <span>Minutes</span></div>
+                <div class="countdown-item" id="seconds">00 <span>Seconds</span></div>
+            </div>
+            <a href="#" class="btn">Secure Your Spot Now!</a>
+        </section>
+
+        <section id="about">
+            <h2>About the Convergence</h2>
+            <div class="about-content" id="aboutText">
+                <p>Prepare to immerse yourself in a groundbreaking experience at **The Innovators' Convergence 2025**, an unparalleled gathering of the brightest minds and most disruptive technologies. This year, we're diving deep into the synergistic relationship between AI, sustainable solutions, and human potential. Our agenda is packed with dynamic keynotes from visionary leaders, hands-on workshops designed to spark creativity, and interactive panels fostering collaborative dialogue.</p>
+                <p>Discover cutting-edge advancements, connect with peers who share your passion for progress, and gain actionable insights that will propel your projects and career forward. Whether you're an entrepreneur seeking the next big idea, a developer pushing the boundaries of code, a researcher exploring new frontiers, or simply someone passionate about innovation, this convergence offers a unique platform to learn, grow, and contribute to the future.</p>
+                <p>Beyond the main sessions, enjoy dedicated networking zones, a showcase of emerging startups, and specialized tracks catering to diverse interests. Don't just attend an event; become part of a movement that's actively shaping the world. Limited seats are available to ensure an intimate and impactful experience.</p>
+            </div>
+            <div class="read-more-btn" id="readMoreBtn">Read More</div>
+        </section>
+
+        <section id="details">
+            <h2>Convergence Details</h2>
+            <div class="event-details">
+                <div>
+                    <i class="fas fa-calendar-alt"></i> Date: October 27, 2025
+                </div>
+                <div>
+                    <i class="fas fa-clock"></i> Time:10:00 AM - 6:00 PM (IST)
+                </div>
+                <div>
+                    <i class="fas fa-map-marker-alt"></i> Venue: Grand Convention Center, Bengaluru, India
+                </div>
+                <div>
+                    <i class="fas fa-globe"></i> Virtual Access: Available for global attendees (link to be shared)
+                </div>
+            </div>
+        </section>
+
+        <section id="contact">
+            <h2>Get in Touch</h2>
+            <div class="contact-info">
+                <p>For inquiries, partnerships, or speaker opportunities, please contact us:</p>
+                <p><i class="fas fa-envelope"></i> Email: <a href="mailto:info@innovatorsconvergence.com">info@innovatorsconvergence.com</a></p>
+                <p><i class="fas fa-phone-alt"></i> Phone: +91 87654 32109</p>
+                <p><i class="fab fa-twitter"></i> Follow us on Twitter: <a href="https://twitter.com/innovateconverge" target="_blank">@InnovateConverge</a></p>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Dynamic Event Extravaganza. All rights reserved.</p>
+    </footer>
+
+    <script>
+
+
+        // 1. Countdown Timer
+        const countdownDate = new Date("October 27, 2025 10:00:00").getTime();
+
+        const x = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = countdownDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerHTML = (days < 10 ? "0" : "") + days + " <span>Days</span>";
+            document.getElementById("hours").innerHTML = (hours < 10 ? "0" : "") + hours + " <span>Hours</span>";
+            document.getElementById("minutes").innerHTML = (minutes < 10 ? "0" : "") + minutes + " <span>Minutes</span>";
+            document.getElementById("seconds").innerHTML = (seconds < 10 ? "0" : "") + seconds + " <span>Seconds</span>";
+
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("countdown").innerHTML = "<h2>The Event Has Started!</h2><p>Welcome to the Innovators' Convergence!</p>";
+            }
+        }, 1000);
+
+        // 2. Read More / Show Less Toggle for About Section
+        const aboutText = document.getElementById('aboutText');
+        const readMoreBtn = document.getElementById('readMoreBtn');
+        const initialHeight = aboutText.style.maxHeight; // Store initial max-height if set in CSS
+
+        readMoreBtn.addEventListener('click', function() {
+            if (aboutText.classList.contains('expanded')) {
+                aboutText.classList.remove('expanded');
+                readMoreBtn.textContent = 'Read More';
+            } else {
+                aboutText.classList.add('expanded');
+                readMoreBtn.textContent = 'Show Less';
+            }
+        });
+    </script>
+
+</body>
+</html>

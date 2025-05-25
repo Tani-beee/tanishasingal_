@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Hub - Our Blog</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- START OF EMBEDDED CSS --- */
+        :root {
+            --primary-color: #4A90E2; /* A calming blue */
+            --secondary-color: #50E3C2; /* A vibrant teal */
+            --accent-color: #F5A623; /* A warm orange */
+            --text-dark: #333;
+            --text-light: #f9f9f9;
+            --bg-light: #F4F7F6; /* Light background for overall page */
+            --bg-card: #FFFFFF; /* White background for cards/sections */
+            --border-radius-sm: 8px;
+            --border-radius-lg: 12px;
+            --box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            --line-color: #DDEEEE;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif; /* A more readable font for blogs */
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap; /* Allows sections to wrap on smaller screens */
+            gap: 30px; /* Space between main and sidebar */
+        }
+
+        header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: var(--text-light);
+            padding: 50px 20px;
+            text-align: center;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            margin-bottom: 10px;
+            font-size: 3.2em;
+            letter-spacing: 0.5px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        main {
+            flex: 3; /* Main content takes more space */
+            min-width: 60%; /* Ensure main content doesn't get too small */
+        }
+
+        aside {
+            flex: 1; /* Sidebar takes less space */
+            min-width: 300px; /* Minimum width for sidebar */
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        section, .blog-post-card, .sidebar-widget {
+            padding: 30px;
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--box-shadow);
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 8px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--accent-color);
+            border-radius: 2px;
+        }
+
+        h3 {
+            color: var(--primary-color);
+            font-size: 1.8em;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .blog-posts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .blog-post-card {
+            text-align: left;
+            padding: 25px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .blog-post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .blog-post-card img {
+            max-width: 100%;
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 15px;
+        }
+
+        .blog-post-card h3 {
+            font-size: 1.6em;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #333; /* Default text color */
+        }
+
+        .blog-post-card p {
+            font-size: 0.95em;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .read-more {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 18px;
+            border-radius: var(--border-radius-sm);
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+
+        .read-more:hover {
+            background-color: #3B7AD1; /* A darker blue */
+        }
+
+        /* --- TOOLS STYLES --- */
+
+        /* 1. Learning Journey Tracker */
+        .progress-tracker {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: var(--bg-light); /* Light background for tracker */
+            border-radius: var(--border-radius-lg);
+            position: relative;
+            overflow-x: auto;
+            text-align: center; /* Center the whole tracker */
+        }
+
+        .progress-tracker::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 20px;
+            right: 20px;
+            height: 4px;
+            background-color: var(--line-color);
+            z-index: 1;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #CCC;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            border: 3px solid #AAA;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .step-title {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: var(--text-dark);
+            font-weight: bold;
+        }
+
+        .step-description {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .progress-step.completed .step-circle {
+            background-color: var(--secondary-color);
+            border-color: #37B9A0; /* A darker teal */
+        }
+
+        .progress-step.active .step-circle {
+            background-color: var(--accent-color);
+            border-color: #E68A00;
+            animation: pulse-active 1.5s infinite;
+        }
+
+        @keyframes pulse-active {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245,166,35, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(245,166,35, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245,166,35, 0); }
+        }
+
+        /* 3. Inquiry Form */
+        #inquiryForm {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+            text-align: left;
+        }
+        #inquiryForm input[type="text"],
+        #inquiryForm input[type="email"],
+        #inquiryForm textarea {
+            padding: 12px 15px;
+            border: 1px solid var(--primary-color);
+            border-radius: var(--border-radius-sm);
+            font-size: 1em;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        #inquiryForm textarea { min-height: 100px; }
+        #inquiryForm button[type="submit"] {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 10px;
+            align-self: center;
+        }
+        #inquiryForm button[type="submit"]:hover {
+            background-color: #3B7AD1;
+            transform: translateY(-3px);
+        }
+        #formMessage {
+            margin-top: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: var(--secondary-color);
+            text-align: center;
+        }
+
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            margin-top: 40px;
+            font-size: 0.9em;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            main, aside {
+                min-width: unset; /* Remove min-width to allow full width */
+                flex: none; /* Remove flex to allow full width */
+                width: 100%; /* Take full width */
+            }
+            header h1 { font-size: 2.8em; }
+            header p { font-size: 1.1em; }
+            h2 { font-size: 2em; margin-bottom: 20px; }
+            section, .blog-post-card, .sidebar-widget { padding: 25px; }
+            .blog-post-card h3 { font-size: 1.4em; }
+        }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 2.4em; }
+            header p { font-size: 1em; }
+            h2 { font-size: 1.8em; margin-bottom: 15px; }
+            .container { padding: 15px; }
+            .progress-step { min-width: 90px; } /* Smaller min-width for tracker */
+            .step-circle { width: 40px; height: 40px; font-size: 1.2em; }
+            .step-title { font-size: 0.8em; }
+            .step-description { font-size: 0.7em; }
+            #inquiryForm input, #inquiryForm textarea { font-size: 0.95em; padding: 10px 12px; }
+            #inquiryForm button { font-size: 1em; padding: 10px 20px; }
+        }
+
+        @media (max-width: 480px) {
+            header h1 { font-size: 2em; }
+            header p { font-size: 0.9em; }
+            h2 { font-size: 1.6em; }
+            .container { padding: 10px; }
+            .blog-post-card { padding: 20px; }
+            .blog-posts { grid-template-columns: 1fr; } /* Single column on very small screens */
+            .progress-tracker { padding: 15px 10px; }
+        }
+        /* --- END OF EMBEDDED CSS --- */
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>The Knowledge Hub Blog</h1>
+        <p>Insights, Tutorials, and Discoveries</p>
+    </header>
+
+    <div class="container">
+        <main>
+            <section id="latest-posts">
+                <h2>Latest Posts</h2>
+                <div class="blog-posts">
+                    <div class="blog-post-card">
+                        <img src="https://res.cloudinary.com/dnlhvdxem/image/upload/v1748029356/5-AI-Advancements-to-Expect-in-the-Next-10-Years-scaled_rnx2za.jpg" alt="AI Ethics Image">
+                        <h3>The Ethical Quandaries of AI</h3>
+                        <p>As AI rapidly evolves, so do the complex ethical challenges it presents. Explore the moral dilemmas and societal impacts of artificial intelligence.</p>
+                        <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="blog-post-card">
+                        <img src="https://res.cloudinary.com/dnlhvdxem/image/upload/v1748029306/The-Top-5-Data-Science-And-Analytics-Trends-In-2023_kuoqov.jpg" alt="Data Science Image">
+                        <h3>Your First Steps in Data Science</h3>
+                        <p>Confused about where to start with data science? This beginner's guide breaks down the essential tools and concepts to get you started on your journey.</p>
+                        <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="blog-post-card">
+                        <img src="https://res.cloudinary.com/dnlhvdxem/image/upload/v1748029113/6585cea39ae01230757b9f31_QuantumCloud_uxsxtd.webp" alt="Cloud Computing Image">
+                        <h3>Understanding Cloud Computing Basics</h3>
+                        <p>Demystify cloud computing. Learn about its core principles, types of services, and why it's revolutionizing business operations globally.</p>
+                        <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <aside>
+            <div class="sidebar-widget" id="learning-journey">
+                <h2>Your Learning Journey</h2>
+                <div class="progress-tracker" id="progressTracker">
+                    <div class="progress-step completed">
+                        <div class="step-circle"><i class="fas fa-check"></i></div>
+                        <div class="step-title">1. Discover</div>
+                        <div class="step-description">Find topics that interest you.</div>
+                    </div>
+                    <div class="progress-step active">
+                        <div class="step-circle">2</div>
+                        <div class="step-title">2. Read & Learn</div>
+                        <div class="step-description">Engage with our articles.</div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-circle">3</div>
+                        <div class="step-title">3. Apply</div>
+                        <div class="step-description">Use new knowledge.</div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-circle">4</div>
+                        <div class="step-title">4. Share</div>
+                        <div class="step-description">Spread the word.</div>
+                    </div>
+                </div>
+                <button class="btn" id="updateProgressBtn" style="background-color: var(--primary-color); color: white; padding: 10px 20px; border: none; border-radius: 50px; cursor: pointer; margin-top: 20px; font-size: 1em; transition: background-color 0.3s ease;">
+                    <i class="fas fa-forward"></i> Next Step
+                </button>
+            </div>
+
+            <div class="sidebar-widget" id="contact-us">
+                <h2>Contact Us</h2>
+                <form id="inquiryForm">
+                    <input type="text" id="inquiryName" placeholder="Your Name" required>
+                    <input type="email" id="inquiryEmail" placeholder="Your Email" required>
+                    <textarea id="inquiryMessage" placeholder="Your Message" required></textarea>
+                    <button type="submit">Send Message</button>
+                    <div id="formMessage"></div>
+                </form>
+            </div>
+        </aside>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 The Knowledge Hub. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        /* --- START OF EMBEDDED JAVASCRIPT --- */
+
+        // 1. Inquiry Form Submission (now "Contact Us")
+        const inquiryForm = document.getElementById('inquiryForm');
+        const formMessage = document.getElementById('formMessage');
+
+        inquiryForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('inquiryName').value;
+            const email = document.getElementById('inquiryEmail').value;
+            const message = document.getElementById('inquiryMessage').value;
+
+            if (!name || !email || !message) {
+                formMessage.textContent = 'Please fill in all fields.';
+                formMessage.style.color = '#F44336';
+                return;
+            }
+
+            console.log('Contact Form Submitted:', { name, email, message });
+
+            formMessage.textContent = 'Thank you for your message, ' + name + '! We will get back to you shortly.';
+            formMessage.style.color = 'var(--secondary-color)'; // Use the secondary color for success
+
+            inquiryForm.reset();
+        });
+
+        // 2. Learning Journey Tracker (formerly Application Progress)
+        const progressTracker = document.getElementById('progressTracker');
+        const progressSteps = document.querySelectorAll('.progress-step');
+        const updateProgressBtn = document.getElementById('updateProgressBtn');
+
+        let currentActiveStep = 1; // Start with step 1 being active (index 0 is "completed")
+
+        function updateProgressTracker() {
+            progressSteps.forEach((step, index) => {
+                if (index < currentActiveStep) {
+                    step.classList.add('completed');
+                    step.classList.remove('active');
+                    step.querySelector('.step-circle').innerHTML = '<i class="fas fa-check"></i>';
+                } else if (index === currentActiveStep) {
+                    step.classList.remove('completed');
+                    step.classList.add('active');
+                    step.querySelector('.step-circle').textContent = (index + 1);
+                } else {
+                    step.classList.remove('completed', 'active');
+                    step.querySelector('.step-circle').textContent = (index + 1);
+                }
+            });
+
+            if (currentActiveStep >= progressSteps.length) {
+                updateProgressBtn.disabled = true;
+                updateProgressBtn.textContent = 'Journey Complete!';
+                updateProgressBtn.style.backgroundColor = 'var(--secondary-color)';
+                updateProgressBtn.style.cursor = 'not-allowed';
+            } else {
+                updateProgressBtn.disabled = false;
+                updateProgressBtn.textContent = 'Next Step';
+                updateProgressBtn.style.backgroundColor = 'var(--primary-color)';
+                updateProgressBtn.style.cursor = 'pointer';
+            }
+        }
+
+        updateProgressBtn.addEventListener('click', () => {
+            if (currentActiveStep < progressSteps.length) {
+                currentActiveStep++;
+                updateProgressTracker();
+            }
+        });
+
+        // Initialize the progress tracker on page load
+        updateProgressTracker();
+
+        /* --- END OF EMBEDDED JAVASCRIPT --- */
+    </script>
+</body>
+</html>
